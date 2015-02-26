@@ -4,12 +4,14 @@ SOURCES=./sosemanuk_sources
 
 MAIN_OBJS=sosemanuk.o main.o
 BIGTEST_OBJS=sosemanuk.o bigtest.o
+TEST_VECTORS_OBJS=sosemanuk.o testvectors.o
 
 MAIN_DEVELOPER_OBJS=$(patsubst %, $(SOURCES)/%, ecrypt-sync.o sosemanuk.o main.o)
 BIGTEST_DEVELOPER_OBJS=$(patsubst %, $(SOURCES)/%, ecrypt-sync.o sosemanuk.o bigtest_2.o)
 
 MAIN=main
 BIGTEST=bigtest
+TEST_VECTORS=testvectors
 
 MAIN_DEVELOPER=$(SOURCES)/main
 BIGTEST_DEVELOPER=$(SOURCES)/bigtest_2
@@ -29,6 +31,9 @@ $(MAIN_DEVELOPER): $(MAIN_DEVELOPER_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(BIGTEST_DEVELOPER): $(BIGTEST_DEVELOPER_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(TEST_VECTORS): $(TEST_VECTORS_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:

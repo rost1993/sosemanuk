@@ -25,7 +25,7 @@
 #if __BYTE_ORDER == BIG_ENDIAN
 #define U32TO32(x)								\
 	((x << 24) | ((x << 8) & 0xFF0000) | ((x >> 8) & 0xFF00) | (x >> 24))
-#elif
+#elif __BYTE_ORDER == LITTLE_ENDIAN
 #define U32TO32(x)	(x)
 #else
 #error unsupported byte 
@@ -272,10 +272,10 @@
 // Entry keystream
 #define SRD(S, x0, x1, x2, x3, i) {		\
 	S(u0, u1, u2, u3, u4);			\
-	keystream[i] = (u ## x0) ^ v0;		\
-	keystream[i + 1] = (u ## x1) ^ v1;	\
-	keystream[i + 2] = (u ## x2) ^ v2;	\
-	keystream[i + 3] = (u ## x3) ^ v3;	\
+	keystream[i] = U32TO32(((u ## x0) ^ v0));		\
+	keystream[i + 1] = U32TO32(((u ## x1) ^ v1));	\
+	keystream[i + 2] = U32TO32(((u ## x2) ^ v2));	\
+	keystream[i + 3] = U32TO32(((u ## x3) ^ v3));	\
 }
 
 // Multiplication by alpha: alpha * x = (x << 8) ^ mul_a[x >> 24]
@@ -660,26 +660,26 @@ sosemanuk_encrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t bu
 	for(; buflen >= 80; buflen -= 80, buf += 80, out += 80) {
 		sosemanuk_generate_keystream(ctx, keystream);
 		
-		*(uint32_t *)(out +  0) = *(uint32_t *)(buf +  0) ^ U32TO32(keystream[ 0]);
-		*(uint32_t *)(out +  4) = *(uint32_t *)(buf +  4) ^ U32TO32(keystream[ 1]);
-		*(uint32_t *)(out +  8) = *(uint32_t *)(buf +  8) ^ U32TO32(keystream[ 2]);
-		*(uint32_t *)(out + 12) = *(uint32_t *)(buf + 12) ^ U32TO32(keystream[ 3]);
-		*(uint32_t *)(out + 16) = *(uint32_t *)(buf + 16) ^ U32TO32(keystream[ 4]);
-		*(uint32_t *)(out + 20) = *(uint32_t *)(buf + 20) ^ U32TO32(keystream[ 5]);
-		*(uint32_t *)(out + 24) = *(uint32_t *)(buf + 24) ^ U32TO32(keystream[ 6]);
-		*(uint32_t *)(out + 28) = *(uint32_t *)(buf + 28) ^ U32TO32(keystream[ 7]);
-		*(uint32_t *)(out + 32) = *(uint32_t *)(buf + 32) ^ U32TO32(keystream[ 8]);
-		*(uint32_t *)(out + 36) = *(uint32_t *)(buf + 36) ^ U32TO32(keystream[ 9]);
-		*(uint32_t *)(out + 40) = *(uint32_t *)(buf + 40) ^ U32TO32(keystream[10]);
-		*(uint32_t *)(out + 44) = *(uint32_t *)(buf + 44) ^ U32TO32(keystream[11]);
-		*(uint32_t *)(out + 48) = *(uint32_t *)(buf + 48) ^ U32TO32(keystream[12]);
-		*(uint32_t *)(out + 52) = *(uint32_t *)(buf + 52) ^ U32TO32(keystream[13]);
-		*(uint32_t *)(out + 56) = *(uint32_t *)(buf + 56) ^ U32TO32(keystream[14]);
-		*(uint32_t *)(out + 60) = *(uint32_t *)(buf + 60) ^ U32TO32(keystream[15]);
-		*(uint32_t *)(out + 64) = *(uint32_t *)(buf + 64) ^ U32TO32(keystream[16]);
-		*(uint32_t *)(out + 68) = *(uint32_t *)(buf + 68) ^ U32TO32(keystream[17]);
-		*(uint32_t *)(out + 72) = *(uint32_t *)(buf + 72) ^ U32TO32(keystream[18]);
-		*(uint32_t *)(out + 76) = *(uint32_t *)(buf + 76) ^ U32TO32(keystream[19]);
+		*(uint32_t *)(out +  0) = *(uint32_t *)(buf +  0) ^ keystream[ 0];
+		*(uint32_t *)(out +  4) = *(uint32_t *)(buf +  4) ^ keystream[ 1];
+		*(uint32_t *)(out +  8) = *(uint32_t *)(buf +  8) ^ keystream[ 2];
+		*(uint32_t *)(out + 12) = *(uint32_t *)(buf + 12) ^ keystream[ 3];
+		*(uint32_t *)(out + 16) = *(uint32_t *)(buf + 16) ^ keystream[ 4];
+		*(uint32_t *)(out + 20) = *(uint32_t *)(buf + 20) ^ keystream[ 5];
+		*(uint32_t *)(out + 24) = *(uint32_t *)(buf + 24) ^ keystream[ 6];
+		*(uint32_t *)(out + 28) = *(uint32_t *)(buf + 28) ^ keystream[ 7];
+		*(uint32_t *)(out + 32) = *(uint32_t *)(buf + 32) ^ keystream[ 8];
+		*(uint32_t *)(out + 36) = *(uint32_t *)(buf + 36) ^ keystream[ 9];
+		*(uint32_t *)(out + 40) = *(uint32_t *)(buf + 40) ^ keystream[10];
+		*(uint32_t *)(out + 44) = *(uint32_t *)(buf + 44) ^ keystream[11];
+		*(uint32_t *)(out + 48) = *(uint32_t *)(buf + 48) ^ keystream[12];
+		*(uint32_t *)(out + 52) = *(uint32_t *)(buf + 52) ^ keystream[13];
+		*(uint32_t *)(out + 56) = *(uint32_t *)(buf + 56) ^ keystream[14];
+		*(uint32_t *)(out + 60) = *(uint32_t *)(buf + 60) ^ keystream[15];
+		*(uint32_t *)(out + 64) = *(uint32_t *)(buf + 64) ^ keystream[16];
+		*(uint32_t *)(out + 68) = *(uint32_t *)(buf + 68) ^ keystream[17];
+		*(uint32_t *)(out + 72) = *(uint32_t *)(buf + 72) ^ keystream[18];
+		*(uint32_t *)(out + 76) = *(uint32_t *)(buf + 76) ^ keystream[19];
 	}
 
 	if(buflen > 0) {
@@ -695,5 +695,41 @@ void
 sosemanuk_decrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
 {
 	sosemanuk_encrypt(ctx, buf, buflen, out);
+}
+
+#if __BYTE_ORDER == __BIG_ENDIAN
+#define PRINT_U32TO32(x) \
+	(printf("%02x %02x %02x %02x ", (x >> 24), ((x >> 16) & 0xFF), ((x >> 8) & 0xFF), (x & 0xFF)))
+#else
+#define PRINT_U32TO32(x) \
+	(printf("%02x %02x %02x %02x ", (x & 0xFF), ((x >> 8) & 0xFF), ((x >> 16) & 0xFF), (x >> 24)))
+#endif
+
+void
+sosemanuk_test_vectors(struct sosemanuk_context *ctx)
+{
+	uint32_t keystream[20];
+	int i;
+
+	sosemanuk_generate_keystream(ctx, keystream);
+
+	printf("\n Test vectors for the Sosemanuk:\n");
+	
+	printf("\nKey:       ");
+
+	for(i = 0; i < 32; i++)
+		printf("%02x ", ctx->key[i]);
+	
+	printf("\nIV:        ");
+
+	for(i = 0; i < 16; i++)
+		printf("%02x ", ctx->iv[i]);
+	
+	printf("\nKeystream: ");
+	
+	for(i = 0; i < 20; i++)
+		PRINT_U32TO32(keystream[i]);
+		
+	printf("\n\n");
 }
 

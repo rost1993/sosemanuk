@@ -19,4 +19,6 @@ int sosemanuk_set_key_and_iv(struct sosemanuk_context *ctx, const uint8_t *key, 
 void sosemanuk_encrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out);
 void sosemanuk_decrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out);
 
+void soemanuk_test_vectors(struct sosemanuk_context *ctx);
+
 #endif
