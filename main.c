@@ -62,7 +62,7 @@ main()
 		exit(1);
 	}
 
-	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv)) {
+	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
@@ -73,7 +73,7 @@ main()
 		printf("%c ", (char)out1[i]);
 	printf("\n\n\n");*/
 
-	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv)) {
+	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}

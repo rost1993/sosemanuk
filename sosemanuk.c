@@ -417,6 +417,7 @@ uint32_t mul_ia[] = {
 /*
  * Sosemanuk context
  * keylen - chipher key length in bytes
+ * ivlen - vector initialization length in bytes
  * key - chiper key
  * iv - initialization vector
  * sk - array subkey for Serpent24
@@ -426,6 +427,7 @@ uint32_t mul_ia[] = {
 */
 struct sosemanuk_context {
 	int keylen;
+	int ivlen;
 	uint8_t key[32];
 	uint8_t iv[16];
 	uint32_t sk[100];
@@ -439,7 +441,7 @@ struct sosemanuk_context *
 sosemanuk_context_new(void)
 {
 	struct sosemanuk_context *ctx;
-	ctx = malloc(sizeof(*ctx));
+	ctx = (struct sosemanuk_context *)malloc(sizeof(*ctx));
 
 	if(ctx == NULL)
 		return NULL;
@@ -560,15 +562,20 @@ sosemanuk_keysetup(struct sosemanuk_context *ctx)
 // Fill the sosemanuk_context (key and iv)
 // Return value: 0 (if all is well), -1 (is all bad)
 int
-sosemanuk_set_key_and_iv(struct sosemanuk_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[16])
+sosemanuk_set_key_and_iv(struct sosemanuk_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[16], const int ivlen)
 {
 	if((keylen > 0) && (keylen <= SOSEMANUK))
 		ctx->keylen = keylen;
 	else
 		return -1;
 	
-	memcpy(ctx->key, key, keylen);
-	memcpy(ctx->iv, iv, 16);
+	if((ivlen > 0) && (ivlen <= 16))
+		ctx->ivlen = ivlen;
+	else
+		return -1;
+	
+	memcpy(ctx->key, key, ctx->keylen);
+	memcpy(ctx->iv, iv, ctx->ivlen);
 	
 	sosemanuk_keysetup(ctx);
 
@@ -655,7 +662,7 @@ void
 sosemanuk_encrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
 {
 	uint32_t keystream[20];
-	int i;
+	uint32_t i;
 
 	for(; buflen >= 80; buflen -= 80, buf += 80, out += 80) {
 		sosemanuk_generate_keystream(ctx, keystream);
