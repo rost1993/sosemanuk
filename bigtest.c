@@ -1,4 +1,5 @@
-/* Big test sosemanuk.h
+/* 
+ * Big test sosemanuk.h
  * Example: 
  * encrypt - ./bigtest -t 1 -b 1000000 -i file1 -o file2
  * decrypt - ./bigtest -t 2 -b 1000000 -i file2 -o file3
@@ -65,7 +66,7 @@ int
 main(int argc, char *argv[])
 {
 	FILE *fp, *fd;
-	struct sosemanuk_context *ctx;
+	struct sosemanuk_context ctx;
 	uint32_t byte, block = 10000;
 	uint8_t *buf, *out, key[32], iv[16];
 	char file1[MAX_FILE], file2[MAX_FILE];
@@ -109,26 +110,21 @@ main(int argc, char *argv[])
 	memset(key, 'k', sizeof(key));
 	memset(iv, 'i', sizeof(iv));
 
-	if((ctx = sosemanuk_context_new()) == NULL) {
-		printf("Memory allocation error!\n");
-		exit(1);
-	}
+	sosemanuk_init(&ctx);
 
-	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv, 16)) {
+	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 	
 	while((byte = fread(buf, 1, block, fp)) > 0) {
 		if(action == 1)
-			sosemanuk_encrypt(ctx, buf, byte, out);
+			sosemanuk_encrypt(&ctx, buf, byte, out);
 		else
-			sosemanuk_decrypt(ctx, buf, byte, out);
+			sosemanuk_decrypt(&ctx, buf, byte, out);
 		
 		fwrite(out, 1, byte, fd);
 	}
-	
-	sosemanuk_context_free(&ctx);
 	
 	free(buf);
 	free(out);

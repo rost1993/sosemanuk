@@ -8,7 +8,7 @@
 
 #include "sosemanuk.h"
 
-#define BUFLEN		100000000
+#define BUFLEN	100000000
 
 // Struct for time value
 struct timeval t1, t2;
@@ -44,8 +44,7 @@ time_stop(void)
 int
 main()
 {
-	struct sosemanuk_context *ctx;
-	//uint32_t i;
+	struct sosemanuk_context ctx;
 
 	memset(buf, 'q', sizeof(buf));
 	memset(key, 'k', sizeof(key));
@@ -53,38 +52,23 @@ main()
 
 	time_start();
 
-	/*for(i = 0; i < BUFLEN; i++)
-		printf("%c ", (char)buf[i]);
-	printf("\n\n\n");*/
+	sosemanuk_init(&ctx);
 
-	if((ctx = sosemanuk_context_new()) == NULL) {
-		printf("Memory allocation error!\n");
-		exit(1);
-	}
-
-	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv, 16)) {
+	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	sosemanuk_encrypt(ctx, buf, BUFLEN, out1);
+	sosemanuk_encrypt(&ctx, buf, BUFLEN, out1);
+	
+	sosemanuk_init(&ctx);
 
-	/*for(i = 0; i < BUFLEN; i++)
-		printf("%c ", (char)out1[i]);
-	printf("\n\n\n");*/
-
-	if(sosemanuk_set_key_and_iv(ctx, (uint8_t *)key, 32, iv, 16)) {
+	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	sosemanuk_decrypt(ctx, out1, BUFLEN, out2);
-
-	sosemanuk_context_free(&ctx);
-
-	/*for(i = 0; i < BUFLEN; i++)
-		printf("%c ", (char)out2[i]);
-	printf("\n\n\n");*/
+	sosemanuk_decrypt(&ctx, out1, BUFLEN, out2);
 
 	printf("Run time = %d\n\n", time_stop());
 
