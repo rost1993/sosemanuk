@@ -8,7 +8,7 @@
 
 #include "sosemanuk.h"
 
-#define BUFLEN	100000000
+#define BUFLEN	10000000
 
 // Struct for time value
 struct timeval t1, t2;
@@ -52,23 +52,19 @@ main()
 
 	time_start();
 
-	sosemanuk_init(&ctx);
-
 	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	sosemanuk_encrypt(&ctx, buf, BUFLEN, out1);
+	sosemanuk_crypt(&ctx, buf, BUFLEN, out1);
 	
-	sosemanuk_init(&ctx);
-
 	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	sosemanuk_decrypt(&ctx, out1, BUFLEN, out2);
+	sosemanuk_crypt(&ctx, out1, BUFLEN, out2);
 
 	printf("Run time = %d\n\n", time_stop());
 

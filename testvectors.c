@@ -23,8 +23,6 @@ main(void)
 	
 	struct sosemanuk_context ctx;
 
-	sosemanuk_init(&ctx);
-
 	if(sosemanuk_set_key_and_iv(&ctx, key1, 32, iv1, 16)) {
 		printf("Filling sosemanuk context error!\n");
 		exit(1);

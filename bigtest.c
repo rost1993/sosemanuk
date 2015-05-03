@@ -110,8 +110,6 @@ main(int argc, char *argv[])
 	memset(key, 'k', sizeof(key));
 	memset(iv, 'i', sizeof(iv));
 
-	sosemanuk_init(&ctx);
-
 	if(sosemanuk_set_key_and_iv(&ctx, (uint8_t *)key, 32, iv, 16)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
@@ -119,9 +117,9 @@ main(int argc, char *argv[])
 	
 	while((byte = fread(buf, 1, block, fp)) > 0) {
 		if(action == 1)
-			sosemanuk_encrypt(&ctx, buf, byte, out);
+			sosemanuk_crypt(&ctx, buf, byte, out);
 		else
-			sosemanuk_decrypt(&ctx, buf, byte, out);
+			sosemanuk_crypt(&ctx, buf, byte, out);
 		
 		fwrite(out, 1, byte, fd);
 	}

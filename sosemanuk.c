@@ -416,7 +416,7 @@ uint32_t mul_ia[] = {
 
 
 // Sosemanuk initialization function
-void
+static void
 sosemanuk_init(struct sosemanuk_context *ctx)
 {
 	memset(ctx, 0, sizeof(*ctx));
@@ -527,6 +527,8 @@ sosemanuk_keysetup(struct sosemanuk_context *ctx)
 int
 sosemanuk_set_key_and_iv(struct sosemanuk_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[16], const int ivlen)
 {
+	sosemanuk_init(ctx);
+
 	if((keylen > 0) && (keylen <= SOSEMANUK))
 		ctx->keylen = keylen;
 	else
@@ -615,14 +617,14 @@ sosemanuk_generate_keystream(struct sosemanuk_context *ctx, uint32_t *keystream)
 }
 
 /*
- * Sosemanuk encrypt function
+ * Sosemanuk crypt function
  * ctx - pointer on sosemanuk_context
  * buf - pointer on buffer data
  * buflen - length the data buffer
  * out - pointer on output
 */
 void
-sosemanuk_encrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
+sosemanuk_crypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
 {
 	uint32_t keystream[20];
 	uint32_t i;
@@ -658,13 +660,6 @@ sosemanuk_encrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t bu
 		for(i = 0; i < buflen; i++)
 			out[i] = buf[i] ^ ((uint8_t *)keystream)[i];
 	}
-}
-
-// Soemanuk decrypt function. See sosemanuk_encrypt
-void
-sosemanuk_decrypt(struct sosemanuk_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
-{
-	sosemanuk_encrypt(ctx, buf, buflen, out);
 }
 
 #if __BYTE_ORDER == __BIG_ENDIAN
